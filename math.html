@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>中学生向け 数学まとめ｜一次関数・平方根</title>
+  <meta name="description" content="中学生向けの無料学習まとめサイト。国語・数学・英語・理科・社会の解説とクイズで楽しく勉強できます。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="math">
+
+<header>
+  <h1>数学まとめ</h1>
+  <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+</header>
+
+<main class="content">
+<div class="mode-switch">
+  <button onclick="showStudy()">📖 解説モード</button>
+  <button onclick="showQuiz()">📝 クイズモード</button>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 キーワード検索">
+</div>
+
+<section class="box study">
+  <h2>一次関数</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p><strong>y = ax + b</strong></p>
+
+  <h3>② 超かんたん説明</h3>
+  <ul>
+    <li>a：傾き（どれくらい斜めか）</li>
+    <li>b：切片（スタートの位置）</li>
+  </ul>
+  <p>→ グラフの形は a と b で決まる</p>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>＋ と − の符号ミス</li>
+    <li>x に数字を代入した後の計算ミス</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>まず b を決めてから a を考えると、ミスが減る</p>
+</section>
+
+<section class="box study">
+  <h2>平方根</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p><strong>√a × √b = √(a×b)</strong></p>
+
+  <h3>② 超かんたん説明</h3>
+  <p>平方根は「2乗したら元の数になる数」</p>
+  <p>例：√9 = 3（3×3 = 9）</p>
+  <p>例：√8 + √18 = 2√2 + 3√2 = 5√2</p>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>√2 + √3 = √5 としてしまう（←これは間違い）</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>足し算・引き算は、√の中をそのまま計算しない！</p>
+</section>
+<section class="box quiz">
+  <h2>📝 確認クイズ</h2>
+  <p id="score"></p>
+  <div id="quizArea"></div>
+  <button class="reload" onclick="loadQuiz()">🔄 問題を変える</button>
+</section>
+
+<a href="index.html" class="back">← トップへ戻る</a>
+
+</main>
+<script>
+// ===== 検索機能 =====
+const searchInput = document.getElementById("searchInput");
+const boxes = document.querySelectorAll(".study");
+
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.toLowerCase();
+
+  boxes.forEach(box => {
+    const text = box.innerText.toLowerCase();
+    box.style.display = text.includes(keyword) ? "block" : "none";
+  });
+});
+
+// ===== クイズデータ =====
+const quizData = [
+  { q: "一次関数の式はどれ？", choices: ["y = ax + b", "y = ax²", "x = ay + b"], answer: 0 },
+  { q: "√9 の答えは？", choices: ["2", "3", "9"], answer: 1 },
+  { q: "y = 2x + 3 の切片は？", choices: ["2", "3", "5"], answer: 1 },
+  { q: "√16 の答えは？", choices: ["2", "4", "8"], answer: 1 },
+  { q: "一次関数で x が増えると y も増える時、a は？", choices: ["正", "負", "0"], answer: 0 },
+
+  { q: "y = -3x + 5 の傾きは？", choices: ["-3", "5", "3"], answer: 0 },
+  { q: "√25 はいくつ？", choices: ["10", "5", "25"], answer: 1 },
+  { q: "y = 4x + 1 の切片は？", choices: ["4", "1", "0"], answer: 1 },
+  { q: "√2 × √8 の答えは？", choices: ["√16", "4", "2√4"], answer: 1 },
+  { q: "y = ax + b で b が表すものは？", choices: ["傾き", "切片", "xの値"], answer: 1 },
+
+  { q: "√36 の答えは？", choices: ["6", "18", "12"], answer: 0 },
+  { q: "一次関数 y = ax + b で、x = 0 のときの y の値は？",choices: ["a", "b", "0"], answer: 1 },
+  { q: "√5 + √5 は？", choices: ["√10", "2√5", "√25"], answer: 1 },
+  { q: "y = x + 7 の切片は？", choices: ["1", "7", "0"], answer: 1 },
+  { q: "√49 は？", choices: ["6", "7", "8"], answer: 1 }
+];
+
+let correctCount = 0;
+let answeredCount = 0;
+
+// ===== モード切替 =====
+function showQuiz() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "none");
+  document.querySelector(".quiz").style.display = "block";
+  loadQuiz();
+}
+
+function showStudy() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "block");
+  document.querySelector(".quiz").style.display = "none";
+}
+
+// ===== クイズ表示 =====
+function loadQuiz() {
+  correctCount = 0;
+  answeredCount = 0;
+  document.getElementById("score").innerText = "";
+  const area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  const shuffled = quizData.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 5);
+
+  selected.forEach((item, i) => {
+    let html = `<div class="q"><p><strong>Q${i+1}.</strong> ${item.q}</p>`;
+    item.choices.forEach((c, index) => {
+      html += `<button onclick="checkAnswer(this, ${index === item.answer})">${c}</button>`;
+    });
+    html += `</div>`;
+    area.innerHTML += html;
+  });
+}
+
+// ===== 正誤判定 =====
+function checkAnswer(btn, isCorrect) {
+  if (btn.classList.contains("done")) return;
+
+  btn.classList.add("done");
+  answeredCount++;
+
+  if (isCorrect) {
+    btn.style.background = "#8BC34A";
+    btn.innerText = "正解！🎉";
+    correctCount++;
+  } else {
+    btn.style.background = "#F44336";
+    btn.innerText = "残念💦";
+  }
+
+  if (answeredCount === 5) {
+    let rank = "";
+
+    if (correctCount === 5) rank = "S 🎉 完璧！";
+    else if (correctCount === 4) rank = "A 👍 すごい！";
+    else if (correctCount === 3) rank = "B 🙂 合格！";
+    else if (correctCount === 2) rank = "C 😅 もう一息！";
+    else rank = "D 💦 がんばろう！";
+
+    document.getElementById("score").innerHTML =
+      `🎯 結果：${correctCount} / 5 正解！<br>ランク：${rank}`;
+  }
+}
+
+// ===== ダークモード切替 + 保存 =====
+function toggleDark() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "on");
+  } else {
+    localStorage.setItem("darkMode", "off");
+  }
+}
+
+// ===== ダークモード状態を復元 =====
+if (localStorage.getItem("darkMode") === "on") {
+  document.body.classList.add("dark");
+}
+</script>
+
+
+</body>
+</html>

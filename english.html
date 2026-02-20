@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>中学生向け 英語まとめ｜be動詞・一般動詞</title>
+  <meta name="description" content="中学生向けの無料学習まとめサイト。国語・数学・英語・理科・社会の解説とクイズで楽しく勉強できます。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="english">
+
+<header>
+  <h1>英語まとめ</h1>
+  <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+</header>
+
+<main class="content">
+<div class="mode-switch">
+  <button onclick="showStudy()">📖 解説</button>
+  <button onclick="showQuiz()">📝 クイズ</button>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 キーワード検索">
+</div>
+
+<section class="box study">
+  <h2>be動詞</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>am / are / is</p>
+
+  <h3>② 超かんたん説明</h3>
+  <ul>
+    <li>I → am</li>
+    <li>You / We / They → are</li>
+    <li>He / She / It → is</li>
+  </ul>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>I is などの主語ミス</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <ul>
+    <li>I am = I'm</li>
+    <li>You are = You're</li>
+    <li>He is = He's</li>
+  </ul>
+</section>
+
+<section class="box study">
+  <h2>一般動詞</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>主語 + 動詞</p>
+
+  <h3>② 超かんたん説明</h3>
+  <p>動作を表す（play / like / study など）</p>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>三単現の s を忘れる</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <ul>
+    <li>He / She / It → 動詞 + s</li>
+    <li>I / You / We / They → そのまま</li>
+  </ul>
+</section>
+
+<section class="box quiz">
+  <h2>📝 確認クイズ</h2>
+  <p id="score"></p>
+  <div id="quizArea"></div>
+  <button class="reload" onclick="loadQuiz()">🔄 問題を変える</button>
+</section>
+
+<a href="index.html" class="back">← トップへ戻る</a>
+
+</main>
+
+<script>
+// ===== 検索機能 =====
+const searchInput = document.getElementById("searchInput");
+const boxes = document.querySelectorAll(".study");
+
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.toLowerCase();
+
+  boxes.forEach(box => {
+    const text = box.innerText.toLowerCase();
+    box.style.display = text.includes(keyword) ? "block" : "none";
+  });
+});
+
+// ===== クイズデータ =====
+const quizData = [
+  { q: "「私は毎日学校へ行きます」", choices: ["I go to school every day.", "I goes to school every day."], answer: 0 },
+  { q: "「彼はサッカーが好きです」", choices: ["He like soccer.", "He likes soccer."], answer: 1 },
+  { q: "「彼女は学生です」", choices: ["She is a student.", "She are a student."], answer: 0 },
+  { q: "「私たちは音楽が好きです」", choices: ["We likes music.", "We like music."], answer: 1 },
+  { q: "I → ?", choices: ["are", "am", "is"], answer: 1 },
+  { q: "They → ?", choices: ["are", "is", "am"], answer: 0 },
+  { q: "He → ?", choices: ["are", "is", "am"], answer: 1 },
+  { q: "三単現で正しい文は？", choices: ["She play tennis.", "She plays tennis."], answer: 1 }
+];
+
+let correctCount = 0;
+let answeredCount = 0;
+
+// ===== モード切替 =====
+function showQuiz() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "none");
+  document.querySelector(".quiz").style.display = "block";
+  loadQuiz();
+}
+
+function showStudy() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "block");
+  document.querySelector(".quiz").style.display = "none";
+}
+
+// ===== クイズ表示 =====
+function loadQuiz() {
+  correctCount = 0;
+  answeredCount = 0;
+  document.getElementById("score").innerText = "";
+  const area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  const shuffled = quizData.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 5);
+
+  selected.forEach((item, i) => {
+    let html = `<div class="q"><p><strong>Q${i+1}.</strong> ${item.q}</p>`;
+    item.choices.forEach((c, index) => {
+      html += `<button onclick="checkAnswer(this, ${index === item.answer})">${c}</button>`;
+    });
+    html += `</div>`;
+    area.innerHTML += html;
+  });
+}
+
+// ===== 正誤判定 =====
+function checkAnswer(btn, isCorrect) {
+  if (btn.classList.contains("done")) return;
+
+  btn.classList.add("done");
+  answeredCount++;
+
+  if (isCorrect) {
+    btn.style.background = "#8BC34A";
+    btn.innerText = "正解！🎉";
+    correctCount++;
+  } else {
+    btn.style.background = "#F44336";
+    btn.innerText = "残念💦";
+  }
+
+  if (answeredCount === 5) {
+    let rank = "";
+
+    if (correctCount === 5) rank = "S 🎉 完璧！";
+    else if (correctCount === 4) rank = "A 👍 すごい！";
+    else if (correctCount === 3) rank = "B 🙂 合格！";
+    else if (correctCount === 2) rank = "C 😅 もう一息！";
+    else rank = "D 💦 がんばろう！";
+
+    document.getElementById("score").innerHTML =
+      `🎯 結果：${correctCount} / 5 正解！<br>ランク：${rank}`;
+  }
+}
+
+// ===== ダークモード切替 + 保存 =====
+function toggleDark() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "on");
+  } else {
+    localStorage.setItem("darkMode", "off");
+  }
+}
+
+// ===== ダークモード状態を復元 =====
+if (localStorage.getItem("darkMode") === "on") {
+  document.body.classList.add("dark");
+}
+</script>
+
+</body>
+</html>

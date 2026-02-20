@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>中学生向け 社会まとめ｜地理・歴史・公民</title>
+  <meta name="description" content="中学生向けの無料学習まとめサイト。国語・数学・英語・理科・社会の解説とクイズで楽しく勉強できます。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="social">
+
+<header>
+  <h1>社会まとめ</h1>
+  <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+</header>
+
+<main class="content">
+<div class="mode-switch">
+  <button onclick="showStudy()">📖 解説</button>
+  <button onclick="showQuiz()">📝 クイズ</button>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 キーワード検索">
+</div>
+
+<section class="box study">
+  <h2>日本の地理</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>北海道・本州・四国・九州</p>
+
+  <h3>② 超かんたん説明</h3>
+  <ul>
+    <li>日本は4つの大きな島からできている</li>
+    <li>本州がいちばん大きい</li>
+  </ul>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>四国と九州の位置</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>地図を見ながら声に出して覚える</p>
+</section>
+
+<section class="box study">
+  <h2>三権分立</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>立法・行政・司法</p>
+
+  <h3>② 超かんたん説明</h3>
+  <ul>
+    <li>立法 → 法律を作る（国会）</li>
+    <li>行政 → 実行する（内閣）</li>
+    <li>司法 → 判断する（裁判所）</li>
+  </ul>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>三つの役割を混同</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>「作る → 行う → 裁く」で流れを覚える</p>
+</section>
+
+<section class="box study">
+  <h2>時代の流れ</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>縄文 → 弥生 → 古墳 → 飛鳥 → 奈良 → 平安 → 鎌倉 → 室町 → 安土桃山 → 江戸 → 明治 → 大正 → 昭和 → 平成 → 令和</p>
+
+  <h3>② 超かんたん説明</h3>
+  <p>日本の歴史の時代の順番</p>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>鎌倉と室町の順番</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>リズムで暗記する</p>
+</section>
+
+<section class="box quiz">
+  <h2>📝 確認クイズ</h2>
+  <p id="score"></p>
+  <div id="quizArea"></div>
+  <button class="reload" onclick="loadQuiz()">🔄 問題を変える</button>
+</section>
+
+<a href="index.html" class="back">← トップへ戻る</a>
+
+</main>
+
+<script>
+// ===== 検索機能 =====
+const searchInput = document.getElementById("searchInput");
+const boxes = document.querySelectorAll(".study");
+
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.toLowerCase();
+
+  boxes.forEach(box => {
+    const text = box.innerText.toLowerCase();
+    box.style.display = text.includes(keyword) ? "block" : "none";
+  });
+});
+
+// ===== クイズデータ =====
+const quizData = [
+  { q: "日本で一番大きい島は？", choices: ["北海道", "本州", "九州"], answer: 1 },
+  { q: "法律を作るのは？", choices: ["内閣", "裁判所", "国会"], answer: 2 },
+  { q: "行政を行うのは？", choices: ["国会", "内閣", "裁判所"], answer: 1 },
+  { q: "裁判を行うのは？", choices: ["裁判所", "国会", "内閣"], answer: 0 },
+  { q: "弥生時代の次は？", choices: ["古墳", "飛鳥", "縄文"], answer: 0 },
+  { q: "江戸時代の次は？", choices: ["明治", "大正", "昭和"], answer: 0 },
+  { q: "三権分立の三つに含まれないのは？", choices: ["立法", "行政", "立憲"], answer: 2 },
+  { q: "四国の位置は？", choices: ["本州の南", "北海道の南", "九州の南"], answer: 0 }
+];
+
+let correctCount = 0;
+let answeredCount = 0;
+
+// ===== モード切替 =====
+function showQuiz() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "none");
+  document.querySelector(".quiz").style.display = "block";
+  loadQuiz();
+}
+
+function showStudy() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "block");
+  document.querySelector(".quiz").style.display = "none";
+}
+
+// ===== クイズ表示 =====
+function loadQuiz() {
+  correctCount = 0;
+  answeredCount = 0;
+  document.getElementById("score").innerText = "";
+  const area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  const shuffled = quizData.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 5);
+
+  selected.forEach((item, i) => {
+    let html = `<div class="q"><p><strong>Q${i+1}.</strong> ${item.q}</p>`;
+    item.choices.forEach((c, index) => {
+      html += `<button onclick="checkAnswer(this, ${index === item.answer})">${c}</button>`;
+    });
+    html += `</div>`;
+    area.innerHTML += html;
+  });
+}
+
+// ===== 正誤判定 =====
+function checkAnswer(btn, isCorrect) {
+  if (btn.classList.contains("done")) return;
+
+  btn.classList.add("done");
+  answeredCount++;
+
+  if (isCorrect) {
+    btn.style.background = "#8BC34A";
+    btn.innerText = "正解！🎉";
+    correctCount++;
+  } else {
+    btn.style.background = "#F44336";
+    btn.innerText = "残念💦";
+  }
+
+  if (answeredCount === 5) {
+    let rank = "";
+
+    if (correctCount === 5) rank = "S 🎉 完璧！";
+    else if (correctCount === 4) rank = "A 👍 すごい！";
+    else if (correctCount === 3) rank = "B 🙂 合格！";
+    else if (correctCount === 2) rank = "C 😅 もう一息！";
+    else rank = "D 💦 がんばろう！";
+
+    document.getElementById("score").innerHTML =
+      `🎯 結果：${correctCount} / 5 正解！<br>ランク：${rank}`;
+  }
+}
+
+// ===== ダークモード切替 + 保存 =====
+function toggleDark() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "on");
+  } else {
+    localStorage.setItem("darkMode", "off");
+  }
+}
+
+// ===== ダークモード状態を復元 =====
+if (localStorage.getItem("darkMode") === "on") {
+  document.body.classList.add("dark");
+}
+</script>
+
+</body>
+</html>

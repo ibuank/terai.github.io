@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>中学生向け 理科まとめ｜化学・物理・生物</title>
+  <meta name="description" content="中学生向けの無料学習まとめサイト。国語・数学・英語・理科・社会の解説とクイズで楽しく勉強できます。">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="science">
+
+<header>
+  <h1>理科まとめ</h1>
+  <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+</header>
+
+<main class="content">
+<div class="mode-switch">
+  <button onclick="showStudy()">📖 解説</button>
+  <button onclick="showQuiz()">📝 クイズ</button>
+</div>
+
+<div class="search-box">
+  <input type="text" id="searchInput" placeholder="🔍 キーワード検索">
+</div>
+
+<section class="box study">
+  <h2>植物のつくり</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>根・茎・葉・花・実</p>
+
+  <h3>② 超かんたん説明</h3>
+  <ul>
+    <li>根 → 水や養分を吸う</li>
+    <li>茎 → 水や養分を運ぶ</li>
+    <li>葉 → 光合成をする</li>
+    <li>花 → 実をつくるもと</li>
+  </ul>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>根と茎の役割を混同</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <p>「吸う → 運ぶ → 作る」で流れを覚える</p>
+</section>
+
+<section class="box study">
+  <h2>物質の変化（状態変化）</h2>
+
+  <h3>① これだけ覚えればOK</h3>
+  <p>固体 ⇔ 液体 ⇔ 気体</p>
+
+  <h3>② 超かんたん説明</h3>
+  <p>温度が変わると形が変わる</p>
+
+  <h3>③ よくあるミス</h3>
+  <ul>
+    <li>融解・凝固・蒸発・凝縮の混同</li>
+  </ul>
+
+  <h3>④ コツ</h3>
+  <ul>
+    <li>氷 → 水 → 水蒸気 で考える</li>
+  </ul>
+</section>
+
+<section class="box quiz">
+  <h2>📝 確認クイズ</h2>
+  <p id="score"></p>
+  <div id="quizArea"></div>
+  <button class="reload" onclick="loadQuiz()">🔄 問題を変える</button>
+</section>
+
+<a href="index.html" class="back">← トップへ戻る</a>
+
+</main>
+
+<script>
+// ===== 検索機能 =====
+const searchInput = document.getElementById("searchInput");
+const boxes = document.querySelectorAll(".study");
+
+searchInput.addEventListener("input", () => {
+  const keyword = searchInput.value.toLowerCase();
+
+  boxes.forEach(box => {
+    const text = box.innerText.toLowerCase();
+    box.style.display = text.includes(keyword) ? "block" : "none";
+  });
+});
+
+// ===== クイズデータ =====
+const quizData = [
+  { q: "水を吸うはたらきがあるのは？", choices: ["根", "葉", "花"], answer: 0 },
+  { q: "光合成をするのは？", choices: ["根", "茎", "葉"], answer: 2 },
+  { q: "水が氷になる変化は？", choices: ["蒸発", "凝固", "融解"], answer: 1 },
+  { q: "氷が水になる変化は？", choices: ["融解", "凝固", "蒸発"], answer: 0 },
+  { q: "水が水蒸気になる変化は？", choices: ["凝縮", "蒸発", "凝固"], answer: 1 },
+  { q: "実をつくるもとになる部分は？", choices: ["花", "葉", "根"], answer: 0 },
+  { q: "水や養分を運ぶのは？", choices: ["根", "茎", "葉"], answer: 1 },
+  { q: "気体から液体になる変化は？", choices: ["蒸発", "凝縮", "融解"], answer: 1 }
+];
+
+let correctCount = 0;
+let answeredCount = 0;
+
+// ===== モード切替 =====
+function showQuiz() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "none");
+  document.querySelector(".quiz").style.display = "block";
+  loadQuiz();
+}
+
+function showStudy() {
+  document.querySelectorAll(".study").forEach(el => el.style.display = "block");
+  document.querySelector(".quiz").style.display = "none";
+}
+
+// ===== クイズ表示 =====
+function loadQuiz() {
+  correctCount = 0;
+  answeredCount = 0;
+  document.getElementById("score").innerText = "";
+  const area = document.getElementById("quizArea");
+  area.innerHTML = "";
+
+  const shuffled = quizData.sort(() => 0.5 - Math.random());
+  const selected = shuffled.slice(0, 5);
+
+  selected.forEach((item, i) => {
+    let html = `<div class="q"><p><strong>Q${i+1}.</strong> ${item.q}</p>`;
+    item.choices.forEach((c, index) => {
+      html += `<button onclick="checkAnswer(this, ${index === item.answer})">${c}</button>`;
+    });
+    html += `</div>`;
+    area.innerHTML += html;
+  });
+}
+
+// ===== 正誤判定 =====
+function checkAnswer(btn, isCorrect) {
+  if (btn.classList.contains("done")) return;
+
+  btn.classList.add("done");
+  answeredCount++;
+
+  if (isCorrect) {
+    btn.style.background = "#8BC34A";
+    btn.innerText = "正解！🎉";
+    correctCount++;
+  } else {
+    btn.style.background = "#F44336";
+    btn.innerText = "残念💦";
+  }
+
+  if (answeredCount === 5) {
+    let rank = "";
+
+    if (correctCount === 5) rank = "S 🎉 完璧！";
+    else if (correctCount === 4) rank = "A 👍 すごい！";
+    else if (correctCount === 3) rank = "B 🙂 合格！";
+    else if (correctCount === 2) rank = "C 😅 もう一息！";
+    else rank = "D 💦 がんばろう！";
+
+    document.getElementById("score").innerHTML =
+      `🎯 結果：${correctCount} / 5 正解！<br>ランク：${rank}`;
+  }
+}
+
+// ===== ダークモード切替 + 保存 =====
+function toggleDark() {
+  document.body.classList.toggle("dark");
+
+  if (document.body.classList.contains("dark")) {
+    localStorage.setItem("darkMode", "on");
+  } else {
+    localStorage.setItem("darkMode", "off");
+  }
+}
+
+// ===== ダークモード状態を復元 =====
+if (localStorage.getItem("darkMode") === "on") {
+  document.body.classList.add("dark");
+}
+</script>
+
+</body>
+</html>
