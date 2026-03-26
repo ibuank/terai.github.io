@@ -216,3 +216,21 @@ body.dark .back {
   text-decoration: none;
   font-size: 14px;
 }
+
+.popular {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 15px;
+}
+
+.popular ul {
+  padding-left: 20px;
+}
+
+.box {
+  transition: 0.3s;
+}
+
+.box:hover {
+  transform: translateY(-3px);
+}
