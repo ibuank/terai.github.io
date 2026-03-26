@@ -23,6 +23,10 @@
 <div class="search-box">
   <input type="text" id="searchInput" placeholder="🔍 キーワード検索">
 </div>
+<div class="toc">
+  <a href="#section1">①</a>
+  <a href="#section2">②</a>
+</div>
 
 <section class="box study">
   <h2>be動詞</h2>
@@ -148,7 +152,11 @@ function loadQuiz() {
 function checkAnswer(btn, isCorrect) {
   if (btn.classList.contains("done")) return;
 
-  btn.classList.add("done");
+  const parent = btn.parentElement;
+  const buttons = parent.querySelectorAll("button");
+
+  buttons.forEach(b => b.classList.add("done"));
+
   answeredCount++;
 
   if (isCorrect) {
@@ -159,6 +167,15 @@ function checkAnswer(btn, isCorrect) {
     btn.style.background = "#F44336";
     btn.innerText = "残念💦";
   }
+
+  // 正解を全部表示
+  buttons.forEach((b, i) => {
+    const text = b.innerText;
+    if (text.includes("正解")) return;
+    if (quizData.some(q => q.answer !== undefined && q.choices[q.answer] === text)) {
+      b.style.background = "#8BC34A";
+    }
+  });
 
   if (answeredCount === 5) {
     let rank = "";
@@ -173,7 +190,6 @@ function checkAnswer(btn, isCorrect) {
       `🎯 結果：${correctCount} / 5 正解！<br>ランク：${rank}`;
   }
 }
-
 // ===== ダークモード切替 + 保存 =====
 function toggleDark() {
   document.body.classList.toggle("dark");
